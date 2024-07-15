@@ -1,6 +1,8 @@
-import { Badge, Box, Button, Divider, IconButton, InputAdornment, Paper, Stack, TextField, Typography, styled } from "@mui/material";
+import { Badge, Box, Button, Divider, IconButton, Paper, Stack, Typography, styled } from "@mui/material";
 import "./Cart.css";
 import { Add, Delete, Remove } from "@mui/icons-material";
+import { useSelector, useDispatch } from 'react-redux';
+import { decreaseQuantity, increaseQuantity, deleteProduct } from "../../Redux/cartSlice";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -12,24 +14,38 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Cart = () => {
 
+  const { selectedProducts } = useSelector((state) => state.carttt);
+
+  const dispatch = useDispatch();
+
+  console.log(selectedProducts);
+
+  let Subtotal = 0;
+
   return (
     <Box >
             
 
 
-            <Paper dir="rtl" className="item-container">
+            {selectedProducts.map((item) => {
+              Subtotal += Number(item.price) * Number(item.quantity)
+              
+                 return(
+          <Paper key={item.id} dir="rtl" className="item-container">
 
             <div className="img-title-parent">
-                <img src="####" alt="" />
-                <p className="product-name">T-shirt</p>
+                <img src={item.imageLink[0]} alt="" />
+                <p className="product-name">{item.productName}</p>
             </div>
 
 
 
             <div style={{ display: "flex", alignItems: "center" }}>
-                <IconButton sx={{color:"#1976d2", ml: "10px"}} onClick={() => {
-
-                }}>
+                <IconButton sx={{color:"#1976d2", ml: "10px"}} 
+                onClick={() => {
+                   dispatch(increaseQuantity(item))
+                }
+                }>
 
                   
                   <Add />
@@ -37,11 +53,13 @@ const Cart = () => {
                 </IconButton>
                 
 
-                <StyledBadge badgeContent={1} color="secondary" />
+                <StyledBadge badgeContent={item.quantity} color="secondary" />
 
-                <IconButton sx={{color:"#1976d2", mr: "10px"}} onClick={() => {
-
-                    }}>
+                <IconButton sx={{color:"#1976d2", mr: "10px"}} 
+                onClick={() => {
+                  dispatch(decreaseQuantity(item))
+               }}
+               >
 
                       
                   <Remove /> 
@@ -50,19 +68,24 @@ const Cart = () => {
             </div>
 
             <div className="price">
-                $100
+                ${Number(item.price) * Number(item.quantity)}
             </div>
 
 
             <Button sx={{ display: {xs: "none", md: "inline-flex"} }}
-            variant="text" color="error">
+            variant="text" color="error"
+            onClick={() => {
+              dispatch(deleteProduct(item))
+           }}
+           >
                 delete
             </Button>
 
-            <IconButton sx={{ color: "#ef5350", display: {xs: "inline-flex", md: "none"} }} onClick={() => {
-              
-               }
-            }>
+            <IconButton sx={{ color: "#ef5350", display: {xs: "inline-flex", md: "none"} }} 
+            onClick={() => {
+              dispatch(deleteProduct(item))
+           }}
+           >
               <Delete />
             </IconButton>
 
@@ -70,6 +93,10 @@ const Cart = () => {
 
 
     </Paper>
+                 )
+
+            }
+            )}
 
 
 
@@ -85,7 +112,7 @@ const Cart = () => {
           <Stack sx={{ justifyContent: "space-between", p: 1.2 }} direction={"row"}>
 
                <Typography variant="body1">Subtotal</Typography>
-               <Typography variant="body1">$100</Typography>
+               <Typography variant="body1">${Subtotal}</Typography>
 
           </Stack>
 

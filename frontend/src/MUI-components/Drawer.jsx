@@ -12,14 +12,11 @@ import ShoppingCart from '@mui/icons-material/ShoppingCart';
 import {
   Brightness4,
   Brightness7,
-  Create,
   Home,
-  Logout,
-  Person2,
-  Settings,
 } from "@mui/icons-material";
 
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -39,6 +36,9 @@ const Drawerr = ({
   drawerType,
   hideDrawer,
 }) => {
+  
+  const { selectedProducts } = useSelector((state) => state.carttt);
+
   const currentLocation = useLocation();
 
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const Drawerr = ({
 
   const myList = [
     { text: "Home", icon: <Home />, path: "/" },
-    { text: "Cart", icon: <StyledBadge badgeContent={3} color="secondary">
+    { text: "Cart", icon: <StyledBadge badgeContent={selectedProducts.length} color="secondary">
     <ShoppingCart />
   </StyledBadge>, path: "/cart" },
   ];
@@ -98,7 +98,7 @@ const Drawerr = ({
 
         {myList.map((item) => {
           return (
-            <ListItem
+            <ListItem key={item.path}
               sx={{
                 bgcolor:
                   currentLocation.pathname === item.path
